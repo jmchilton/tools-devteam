@@ -87,33 +87,7 @@
         <param name="multiread_correct" type="boolean" label="Use multi-read correct" 
             help="Tells Cufflinks to do an initial estimation procedure to more accurately weight reads mapping to multiple locations in the genome." />
 
-        <conditional name="bias_correction">
-            <param name="do_bias_correction" type="select" label="Perform Bias Correction" 
-                help="Bias detection and correction can significantly improve accuracy of transcript abundance estimates.">
-                <option value="No">No</option>
-                <option value="Yes">Yes</option>
-            </param>
-            <when value="Yes">
-                <conditional name="seq_source">
-                  <param name="index_source" type="select" label="Reference sequence data">
-                    <option value="cached">Locally cached</option>
-                    <option value="history">History</option>
-                  </param>
-                  <when value="cached">
-                    <param name="index" type="select" label="Using reference genome">
-                      <options from_data_table="fasta_indexes">
-                        <filter type="data_meta" ref="gtf_input" key="dbkey" column="1" />
-                        <validator type="no_options" message="No reference genome is available for the build associated with the selected input dataset" />
-                      </options>
-                    </param>
-                  </when>
-                  <when value="history">
-                      <param name="ref_file" type="data" format="fasta" label="Using reference file" />
-                  </when>
-                </conditional>
-            </when>
-            <when value="No"></when>
-        </conditional>
+        <expand macro="bias_correction_conditional" />
 
         <param name="include_read_group_files" type="select" label="Include Read Group Datasets" help="Read group datasets provide information on replicates.">
             <option value="No" selected="true">No</option>
