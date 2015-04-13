@@ -1,6 +1,9 @@
-<tool id="bowtie2" name="Bowtie2" version="0.5">
+<tool id="bowtie2" name="Bowtie2" version="0.6">
     <!-- Wrapper compatible with Bowtie version 2.2.4 -->
     <description>- map reads against reference genome</description>
+    <macros>
+        <import>read_group_macros.xml</import>
+    </macros>
     <version_command>bowtie2 --version</version_command>
     <requirements>
         <requirement type="package" version="2.2.4">bowtie2</requirement>
@@ -70,12 +73,29 @@
             #end if
         #end if
         
-        ## Readgroups
-        #if str( $read_group.read_group_selector ) == "yes":
-            --rg-id "${read_group.rgid}"
-            --rg "SM:${read_group.rgsm}"
-            --rg "LB:${read_group.rglb}"
-            --rg "PL:${read_group.rgpl}"
+        ## Read group information.
+        #if str( $library.type ) == "single":
+        #set $rg_auto_name = $read_group_name_default($library.input_1)
+        #elif str( $library.type ) == "paired":
+        #set $rg_auto_name = $read_group_name_default($library.input_1, $library.input_2)
+        #else
+        #set $rg_auto_name = $read_group_name_default($library.input_1)
+        #end if
+        @set_use_rg_var@
+        @set_read_group_vars@
+        #if $use_rg
+          $format_read_group("--rg-id ", $rg_id, '"')
+          $format_read_group("SM:", $rg_sm, '"', arg='--rg ')
+          $format_read_group("PL:", $rg_pl, '"', arg='--rg ')
+          $format_read_group("LB:", $rg_lb, '"', arg='--rg ')
+          $format_read_group("CN:", $rg_cn, '"', arg='--rg ')
+          $format_read_group("DS:", $rg_ds, '"', arg='--rg ')
+          $format_read_group("DT:", $rg_dt, '"', arg='--rg ')
+          $format_read_group("FO:", $rg_fo, '"', arg='--rg ')
+          $format_read_group("KS:", $rg_ks, '"', arg='--rg ')
+          $format_read_group("PG:", $rg_pg, '"', arg='--rg ')
+          $format_read_group("PI:", $rg_pi, '"', arg='--rg ')
+          $format_read_group("PU:", $rg_pu, '"', arg='--rg ')
         #end if
         
         ## Analysis type
@@ -257,20 +277,7 @@
         </conditional>
         
         <!-- read group settings -->
-        <conditional name="read_group">
-            <param name="read_group_selector" type="select" label="Specify the read group for this file?" help="Specifying readgroup information can greatly simplify your downstream analyses by allowing combining multiple datasets. See help below for more details">
-                <option value="yes">Yes</option>
-                <option value="no" selected="True">No</option>
-            </param>
-            <when value="yes">
-                <param name="rgid" type="text" size="25" label="Read group identiﬁer (ID). Each @RG line must have a unique ID. The value of ID is used in the RG tags of alignment records. Must be unique among all read groups in header section." help="--rg-id; Required if RG specified. Read group IDs may be modiﬁed when merging SAM ﬁles in order to handle collisions." />
-                <param name="rglb" type="text" size="25" label="Library name (LB)" help="--rg; Required if RG specified" />
-                <param name="rgpl" type="text" size="25" label="Platform/technology used to produce the reads (PL)" help="--rg; Required if RG specified. Valid values : CAPILLARY, LS454, ILLUMINA, SOLID, HELICOS, IONTORRENT and PACBIO" />
-                <param name="rgsm" type="text" size="25" label="Sample (SM)" help="--rg; Required if RG specified. Use pool name where a pool is being sequenced" />
-            </when>
-            <when value="no" />
-        </conditional>
-        
+        <expand macro="read_group_conditional" />
         <conditional name="analysis_type">
             <param name="analysis_type_selector" type="select" label="Select analysis mode">
                 <option value="simple">1: Default setting only</option>
