@@ -4,45 +4,50 @@
     <token name="@define_read_group_helpers@">
 #import re
 #def identifier_or_name($input1)
-#if hasattr($input1, 'element_identifier')
-#return $input1.element_identifier
-#else
-#return $input1.name.rstrip('.gz').rstrip('.fastq').rstrip('.fq')
-#end if
+    #if hasattr($input1, 'element_identifier')
+        #return $input1.element_identifier
+    #else
+        #return $input1.name.rstrip('.gz').rstrip('.fastq').rstrip('.fq')
+    #end if
 #end def
+
 #def clean(name)
-#set $name_clean = re.sub('[^\w\-_\.]', '_', $name)
-#return $name_clean
+    #set $name_clean = re.sub('[^\w\-_\.]', '_', $name)
+    #return $name_clean
 #end def
+
 #def read_group_name_default($input1, $input2=None)
-#if $input2 is None
-#return $clean($identifier_or_name($input1))
-#else
-#import itertools
-#set $input_name1 = $clean($identifier_or_name($input1))
-#set $input_name2 = $clean($identifier_or_name($input2))
-#set $common_prefix = ''.join([c[0] for c in itertools.takewhile(lambda x: all(x[0] == y for y in x), itertools.izip(*[$input_name1, $input_name2]))])
-#if len($common_prefix) > 3
-#return $common_prefix
-#else
-#return $input_name1
-#end if
-#end if
+    #if $input2 is None
+        #return $clean($identifier_or_name($input1))
+    #else
+        #import itertools
+        #set $input_name1 = $clean($identifier_or_name($input1))
+        #set $input_name2 = $clean($identifier_or_name($input2))
+        #set $common_prefix = ''.join([c[0] for c in itertools.takewhile(lambda x: all(x[0] == y for y in x), itertools.izip(*[$input_name1, $input_name2]))])
+        #if len($common_prefix) > 3
+            #return $common_prefix
+        #else
+            #return $input_name1
+        #end if
+    #end if
 #end def
+
 #def format_read_group(prefix, value, quote='', arg='')
-#if $value
-#return $arg + $quote + $prefix + $value + $quote
-#else
-#return ''
-#end if
+    #if $value
+        #return $arg + $quote + $prefix + $value + $quote
+    #else
+        #return ''
+    #end if
 #end def
+
 #def rg_param(name)
-#if $varExists("rg")
-#return $rg.get($name, None)
-#else
-#return $getVar($name, None)
-#end if
+    #if $varExists("rg")
+        #return $rg.get($name, None)
+    #else
+        #return $getVar($name, None)
+    #end if
 #end def
+
 #set $use_rg = True
     </token>
     <!-- preconditions use_rg and rg_auto_name have been
@@ -50,72 +55,83 @@
     -->
     <token name="@set_read_group_vars@">
 #if $use_rg
-#if $rg_param('read_group_id_conditional') is None
-#set $rg_id = $rg_auto_name
-#elif $rg_param('read_group_id_conditional').do_auto_name
-#set $rg_id = $rg_auto_name
-#else
-#set $rg_id = str($rg_param('read_group_id_conditional').ID)
-#end if
-#if $rg_param('read_group_sm_conditional') is None
-#set $rg_sm = ''
-#elif $rg_param('read_group_sm_conditional').do_auto_name
-#set $rg_sm = $rg_auto_name
-#else
-#set $rg_sm = str($rg_param('read_group_sm_conditional').SM)
-#end if
-#if $rg_param('PL')
-#set $rg_pl = str($rg_param('PL'))
-#else
-#set $rg_pl = ''
-#end if
-#if $rg_param('read_group_lb_conditional') is None
-#set $rg_lb = ''
-#elif $rg_param('read_group_lb_conditional')do_auto_name
-#set $rg_lb = $rg_auto_name
-#else
-#set $rg_lb = str($rg_param('read_group_lb_conditional').LB)
-#end if
-#if $rg_param('CN')
-#set $rg_cn = str($rg_param('CN'))
-#else
-#set $rg_cn = ''
-#end if
-#if $rg_param("DS")
-#set $rg_ds = str($rg_param("DS"))
-#else
-#set $rg_ds = ''
-#end if
-#if $rg_param("DT")
-#set $rg_dt = str($rg_param("DT"))
-#else
-#set $rg_dt = ''
-#end if
-#if $rg_param("FO")
-#set $rg_fo = str($rg_param("FO"))
-#else
-#set $rg_fo = ''
-#end if
-#if $rg_param("KS")
-#set $rg_ks = str($rg_param("KS"))
-#else
-#set $rg_ks = ''
-#end if
-#if $rg_param("PG")
-#set $rg_pg = str($rg_param("PG"))
-#else
-#set $rg_pg = ''
-#end if
-#if str($rg_param("PI"))
-#set $rg_pi = str($rg_param("PI"))
-#else
-#set $rg_pi = ''
-#end if
-#if $rg_param("PU")
-#set $rg_pu = str($rg_param("PU"))
-#else
-#set $rg_pu = ''
-#end if
+    #if $rg_param('read_group_id_conditional') is None
+        #set $rg_id = $rg_auto_name
+    #elif $rg_param('read_group_id_conditional').do_auto_name
+        #set $rg_id = $rg_auto_name
+    #else
+        #set $rg_id = str($rg_param('read_group_id_conditional').ID)
+    #end if
+
+    #if $rg_param('read_group_sm_conditional') is None
+        #set $rg_sm = ''
+    #elif $rg_param('read_group_sm_conditional').do_auto_name
+        #set $rg_sm = $rg_auto_name
+    #else
+        #set $rg_sm = str($rg_param('read_group_sm_conditional').SM)
+    #end if
+
+    #if $rg_param('PL')
+        #set $rg_pl = str($rg_param('PL'))
+    #else
+        #set $rg_pl = ''
+    #end if
+
+    #if $rg_param('read_group_lb_conditional') is None
+        #set $rg_lb = ''
+    #elif $rg_param('read_group_lb_conditional')do_auto_name
+        #set $rg_lb = $rg_auto_name
+    #else
+        #set $rg_lb = str($rg_param('read_group_lb_conditional').LB)
+    #end if
+
+    #if $rg_param('CN')
+        #set $rg_cn = str($rg_param('CN'))
+    #else
+        #set $rg_cn = ''
+    #end if
+
+    #if $rg_param("DS")
+        #set $rg_ds = str($rg_param("DS"))
+    #else
+        #set $rg_ds = ''
+    #end if
+
+    #if $rg_param("DT")
+        #set $rg_dt = str($rg_param("DT"))
+    #else
+        #set $rg_dt = ''
+    #end if
+
+    #if $rg_param("FO")
+        #set $rg_fo = str($rg_param("FO"))
+    #else
+        #set $rg_fo = ''
+    #end if
+
+    #if $rg_param("KS")
+        #set $rg_ks = str($rg_param("KS"))
+    #else
+        #set $rg_ks = ''
+    #end if
+
+    #if $rg_param("PG")
+        #set $rg_pg = str($rg_param("PG"))
+    #else
+        #set $rg_pg = ''
+    #end if
+
+    #if str($rg_param("PI"))
+        #set $rg_pi = str($rg_param("PI"))
+    #else
+        #set $rg_pi = ''
+    #end if
+
+    #if $rg_param("PU")
+        #set $rg_pu = str($rg_param("PU"))
+    #else
+        #set $rg_pu = ''
+    #end if
 #end if
     </token>
     <token name="@set_use_rg_var@">
