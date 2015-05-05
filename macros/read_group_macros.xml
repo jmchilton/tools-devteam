@@ -107,9 +107,9 @@
 #set $rg_pg = ''
 #end if
 #if str($rg_param("PI"))
-#set $rg_pe = str($rg_param("PI"))
+#set $rg_pi = str($rg_param("PI"))
 #else
-#set $rg_pe = ''
+#set $rg_pi = ''
 #end if
 #if $rg_param("PU")
 #set $rg_pu = str($rg_param("PU"))
