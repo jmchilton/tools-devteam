@@ -103,11 +103,26 @@
         #end if
 
         ## Read group information.
-        #if $readGroup.specReadGroup == "yes"
-          --rg-id "$readGroup.rgid"
-          --rg-library "$readGroup.rglb"
-          --rg-platform "$readGroup.rgpl"
-          --rg-sample "$readGroup.rgsm"
+        #if $input.selection_type == "single_dataset"
+        #set $rg_auto_name = $read_group_name_default($singlePaired.input1)
+        #elif $singlePaired.sPaired == "paired"
+        #set $rg_auto_name = $read_group_name_default($singlePaired.input1, $singlePaired.input1)
+        #else
+        #set $rg_auto_name = $read_group_name_default($singlePaired.input)
+        #end if
+        @set_use_rg_var@
+        @set_read_group_vars@
+        #if $use_rg
+          $format_read_group("--rg-id ", $rg_id, '"')
+          $format_read_group("--rg-library ", $rg_lb, '"')
+          $format_read_group("--rg-platform ", $rg_pl, '"')
+          $format_read_group("--rg-sample ", $rg_sm, '"')
+          $format_read_group("--rg-description ", $rg_ds, '"')
+          $format_read_group("--rg-platform-unit ", $rg_pu, '"')
+          $format_read_group("--rg-center ", $rg_cn, '"')
+          $format_read_group("--rg-date ", $rg_dt, '"')
+          ## No options for pi, ks, fo, pg - so we probably want an alternative
+          ## conditional that only allows the picard RG options.
         #end if
 
         ## Set index path, inputs and parameters specific to paired data.
@@ -254,19 +269,7 @@
               </conditional>
             </when>  <!-- full -->
       </conditional>  <!-- params -->
-      <conditional name="readGroup">
-        <param name="specReadGroup" type="select" label="Specify read group?">
-            <option value="yes">Yes</option>
-            <option value="no" selected="True">No</option>
-        </param>
-        <when value="yes">
-            <param name="rgid" type="text" size="25" label="Read group identiﬁer (ID). Each @RG line must have a unique ID. The value of ID is used in the RG tags of alignment records. Must be unique among all read groups in header section." help="Required if RG specified. Read group IDs may be modiﬁed when merging SAM ﬁles in order to handle collisions." />
-            <param name="rglb" type="text" size="25" label="Library name (LB)" help="Required if RG specified" />
-            <param name="rgpl" type="text" size="25" label="Platform/technology used to produce the reads (PL)" help="Required if RG specified. Valid values : CAPILLARY, LS454, ILLUMINA, SOLID, HELICOS, IONTORRENT and PACBIO" />
-            <param name="rgsm" type="text" size="25" label="Sample (SM)" help="Required if RG specified. Use pool name where a pool is being sequenced" />
-        </when>
-        <when value="no" />
-      </conditional> <!-- readGroup -->
+      <expand macro="read_group_conditional" />
     </inputs>
 
     <stdio>
@@ -300,6 +303,7 @@
 
     <macros>
       <import>tophat_macros.xml</import>
+      <import>read_group_macros.xml</import>
       <xml name="paired_parameters">
         <param name="mate_inner_distance" type="integer" value="300" label="Mean Inner Distance between Mate Pairs" />
         <param name="mate_std_dev" type="integer" value="20" label="Std. Dev for Distance between Mate Pairs"  help="The standard deviation for the distribution on inner distances between mate pairs."/>
