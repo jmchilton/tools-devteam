@@ -114,6 +114,8 @@
     @define_read_group_helpers@
     #if str( $input_type.input_type_selector ) == "paired":
       #set $rg_auto_name = $read_group_name_default($input_type.fastq_input1, $input_type.fastq_input2)
+    #elif str( $input_type.input_type_selector ) in ["single_bam", "paired_bam"]:
+      #set $rg_auto_name = $read_group_name_default($input_type.bam_input)
     #else
       #set $rg_auto_name = $read_group_name_default($input_type.fastq_input1)
     #end if
@@ -123,8 +125,6 @@
     ## Begin bwa command line
 
 ####### Fastq paired
-
-
 
     #if str( $input_type.input_type_selector ) == "paired" or str( $input_type.input_type_selector ) == "paired_collection":
       bwa aln

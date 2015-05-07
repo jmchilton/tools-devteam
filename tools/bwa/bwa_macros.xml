@@ -1,7 +1,7 @@
 <macros>
   <import>read_group_macros.xml</import>
   <token name="@set_rg_string@">
-      #set $rg_string = "@RG\tID:" + str($rg.ID)
+      #set $rg_string = "@RG\tID:" + str($rg_id)
       #set $rg_string += $format_read_group("\tSM:", $rg_sm)
       #set $rg_string += $format_read_group("\tPL:", $rg_pl)
       #set $rg_string += $format_read_group("\tLB:", $rg_lb)
