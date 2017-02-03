@@ -17,11 +17,11 @@ def main():
     
     fastq_manipulator = imp.load_module( 'fastq_manipulator', open( script_filename ), script_filename, ( '', 'r', imp.PY_SOURCE ) )
     
-    out = fastqWriter( open( output_filename, 'wb' ), format = input_type )
+    out = fastqWriter( path=output_filename, format=input_type )
     
     i = None
     reads_manipulated = 0
-    for i, fastq_read in enumerate( fastqReader( open( input_filename ), format = input_type ) ):
+    for i, fastq_read in enumerate( fastqReader( path=input_filename, format=input_type ) ):
         new_read = fastq_manipulator.match_and_manipulate_read( fastq_read )
         if new_read:
             out.write( new_read )
